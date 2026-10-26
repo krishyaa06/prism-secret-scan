@@ -1,0 +1,37 @@
+{
+  "name": "prism-secret-scan",
+  "version": "1.0.0",
+  "description": "Zero-dependency CLI with 28 detectors (OpenAI, Anthropic, Groq, GitHub, AWS, Stripe, Discord…) that scans your files and full git history for leaked secrets, masks output and speaks SARIF.",
+  "bin": {
+    "secretscan": "bin/secretscan.js"
+  },
+  "main": "src/index.js",
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "cli",
+    "security",
+    "secrets",
+    "secret-scanning",
+    "api-keys",
+    "git",
+    "gitleaks",
+    "vibe-coding",
+    "prism-protocol"
+  ],
+  "author": "Soumya Bhandare (krishyaa06)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krishyaa06/prism-secret-scan.git"
+  },
+  "homepage": "https://github.com/krishyaa06/prism-secret-scan#readme",
+  "engines": {
+    "node": ">=18.17"
+  }
+}
