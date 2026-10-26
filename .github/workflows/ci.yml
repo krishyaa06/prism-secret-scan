@@ -18,4 +18,4 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm test
       - name: Smoke test
-        run: node bin/secretscan.js --list && node examples/make-leaky-app.js /tmp/leaky && (node bin/secretscan.js /tmp/leaky > /dev/null; test $? -eq 1)
+        run: node bin/secretscan.js --list && node examples/make-leaky-app.js /tmp/leaky && { set +e; node bin/secretscan.js /tmp/leaky > /dev/null; test $? -eq 1; }
