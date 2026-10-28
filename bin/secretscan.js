@@ -39,7 +39,8 @@ if (!fs.existsSync(root)) { console.error(c.red(`✖ No such directory: ${root}`
 const blFile = path.join(root, o["baseline-file"]);
 
 let res;
-try { res = o.history ? S.scanHistory(root) : S.scanDir(root, { extraIgnore: [...(o.exclude || []), path.basename(blFile)] }); }
+const extraIgnore = [...(o.exclude || []), path.basename(blFile)];
+try { res = o.history ? S.scanHistory(root, { extraIgnore }) : S.scanDir(root, { extraIgnore }); }
 catch (e) { console.error(c.red(`✖ ${String(e.stderr || e.message).trim().split("\n")[0]}`)); process.exit(2); }
 if (o.baseline) { S.writeBaseline(blFile, res.findings); console.log(`${c.green("✔")} Baselined ${plural(res.findings.length, "finding")} → ${c.bold(path.relative(process.cwd(), blFile) || blFile)}`); process.exit(0); }
 const base = S.loadBaseline(blFile);
@@ -49,6 +50,11 @@ if (o.sarif) { console.log(JSON.stringify(S.toSarif(findings), null, 2)); proces
 if (o.json) { console.log(JSON.stringify(findings.map(({ secret, ...f }) => (o.show ? { ...f, secret } : f)), null, 2)); process.exit(findings.length ? 1 : 0); }
 
 console.log(header("secretscan", o.history ? `${plural(res.commits, "commit")} of history` : `${plural(res.files, "file")} in ${path.basename(root)}`));
+// Never skip quietly: a file too big to scan is a file that might hold a key.
+if (res.skippedLarge && res.skippedLarge.length) {
+  for (const s of res.skippedLarge) console.log(`  ${c.yellow("⚠")} ${c.dim(`skipped ${s.file} (${(s.bytes / 1048576).toFixed(1)} MB > ${(S.MAX_FILE_BYTES / 1048576).toFixed(0)} MB limit)`)}`);
+  console.log(c.dim(`    Scan the file on its own if you need it covered.\n`));
+}
 if (!findings.length) { console.log(`\n${c.green("✔")} No secrets found.${skipped ? c.dim(` (${skipped} baselined / below --severity)`) : ""}`); process.exit(0); }
 console.log();
 for (const f of findings) {
