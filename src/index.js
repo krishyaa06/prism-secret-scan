@@ -127,3 +127,5 @@ function toSarif(findings) {
   return { version: "2.1.0", $schema: "https://json.schemastore.org/sarif-2.1.0.json", runs: [{ tool: { driver: { name: "secretscan", informationUri: "https://github.com/krishyaa06/prism-secret-scan", rules: RULES.map(([id, name]) => ({ id, shortDescription: { text: name } })) } }, results: findings.map((f) => ({ ruleId: f.rule, level: f.severity === "low" ? "note" : f.severity === "medium" ? "warning" : "error", message: { text: `${f.name}: ${f.masked}` }, locations: [{ physicalLocation: { artifactLocation: { uri: f.file }, region: { startLine: f.line, startColumn: f.col } } }], partialFingerprints: { secret: f.fingerprint } })) }] };
 }
 module.exports = { scanText, scanDir, scanHistory, entropy, mask, fingerprint, loadBaseline, writeBaseline, toSarif, isIgnored, loadIgnoreRules, RULES, MAX_FILE_BYTES };
+
+// build marker
