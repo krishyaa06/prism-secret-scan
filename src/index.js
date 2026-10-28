@@ -129,3 +129,5 @@ function toSarif(findings) {
 module.exports = { scanText, scanDir, scanHistory, entropy, mask, fingerprint, loadBaseline, writeBaseline, toSarif, isIgnored, loadIgnoreRules, RULES, MAX_FILE_BYTES };
 
 // build marker
+
+// build marker 2
