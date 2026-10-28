@@ -45,3 +45,23 @@ test("history finds deleted keys + baseline", () => {
   assert.equal(spawnSync("node", [bin, d]).status, 0);
 });
 test("sarif", () => { const s = S.toSarif(S.scanDir(demo).findings); assert.equal(s.version, "2.1.0"); assert.ok(s.runs[0].results.length >= 7); });
+
+// ── regression: a real key next to other characters is still found (v1.1) ──────
+test("ansi escapes, BOM and CRLF do not hide a key", () => {
+  assert.deepEqual(ids(`\x1b[31m${gh}\x1b[0m`), ["github-token"]);
+  assert.deepEqual(ids(`\uFEFF${gh}`), ["github-token"]);
+  assert.deepEqual(ids(`KEY=${gh}\r`), ["github-token"]);
+  assert.deepEqual(ids(`curl https://x.dev/?key=${gh}`), ["github-token"]);
+  assert.deepEqual(ids(`{"token":"${gh}"}`), ["github-token"]);
+});
+
+test("a placeholder word elsewhere on the line no longer hides a real key", () => {
+  assert.deepEqual(ids(`// example config\nconst t = "${gh}"`), ["github-token"]);
+  assert.deepEqual(ids(`const sample = 1, t = "${gh}"`), ["github-token"]);
+});
+
+test("placeholder secrets are still ignored", () => {
+  assert.deepEqual(ids(`KEY="your-key-here-${"x".repeat(30)}"`), []);
+  assert.deepEqual(ids(`KEY="<YOUR_TOKEN_HERE>"`), []);
+  assert.deepEqual(ids(`KEY="\${GITHUB_TOKEN}"`), []);
+});
